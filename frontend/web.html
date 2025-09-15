@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    MAYI INNOVATIONS Pvt Ltd – Premium Corporate Site
+    Requirements: beautiful visuals, image sliders while scrolling, long well-structured code (~500+ lines)
+    Features:
+      - Sticky, responsive navbar with mobile menu
+      - Hero slideshow (auto + manual) with captions
+      - Parallax image sections
+      - Services grid with icons
+      - Completed Applications showcase (cards)
+      - Horizontal scrolling image reel (auto + drag)
+      - Testimonial slider
+      - Clients logo strip (marquee style)
+      - Careers section with "Send Resume"
+      - Contact section with full details
+      - Footer with HR signature and confidentiality note
+      - Smooth scrolling + reveal-on-scroll animations
+      - Graceful CSS-only fallbacks; vanilla JS for sliders
+  -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MAYI INNOVATIONS Pvt Ltd</title>
+  <style>
+    /* -------------------------------------------------- */
+    /* 0) RESET & BASE                                     */
+    /* -------------------------------------------------- */
+    *,*::before,*::after{box-sizing:border-box}
+    :root{
+      --brand-dark:#0b2545;        /* deep navy */
+      --brand:#13315c;             /* primary */
+      --brand-light:#134074;       /* accent */
+      --brand-accent:#f0c040;      /* gold */
+      --text:#1f2937;              /* slate-800 */
+      --muted:#6b7280;             /* gray-500 */
+      --bg:#ffffff;                /* white */
+      --card:#f8fafc;              /* slate-50 */
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+      --radius:16px;
+      --radius-sm:10px;
+      --max:1200px;
+    }
+    html{scroll-behavior:smooth}
+    body{
+      margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;
+      color:var(--text); background:var(--bg); line-height:1.6;
+    }
+    img{max-width:100%; display:block}
+    a{text-decoration:none; color:inherit}
+    .container{max-width:var(--max); margin:0 auto; padding:0 20px}
+    .btn{display:inline-block; background:var(--brand-accent); color:var(--brand-dark); padding:12px 22px; border-radius:10px; font-weight:700; box-shadow:var(--shadow); transition:.3s transform,.3s box-shadow,.3s background}
+    .btn:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(0,0,0,.12); background:#ffd96e}
+
+    /* -------------------------------------------------- */
+    /* 1) NAVBAR                                           */
+    /* -------------------------------------------------- */
+    header{position:sticky; top:0; z-index:1000; background:rgba(239, 241, 238, 0.938); backdrop-filter: saturate(140%) blur(8px); box-shadow:0 2px 14px rgba(0,0,0,.06)}
+    .nav{display:flex; align-items:center; justify-content:space-between; height:70px}
+    .logo{display:flex; align-items:center; gap:12px; font-weight:900; letter-spacing:.5px; color:var(--brand-dark)}
+    .logo-mark{width:34px; height:34px; border-radius:10px; background: linear-gradient(135deg,var(--brand),var(--brand-light)); box-shadow:inset 0 0 0 2px rgba(11, 11, 11, 0.35)}
+    nav ul{display:flex; list-style:none; gap:24px}
+    nav a{font-weight:600; color:#1f2a44}
+    nav a:hover{color:var(--brand)}
+    .menu-toggle{display:none; font-size:28px; cursor:pointer; padding:10px}
+    @media (max-width: 860px){
+      nav ul{position:absolute; right:20px; top:76px; background:#fff; border-radius:12px; box-shadow:var(--shadow); padding:14px; display:none; flex-direction:column; width:min(240px,90vw)}
+      nav ul.show{display:flex}
+      .menu-toggle{display:block}
+    }
+
+    /* -------------------------------------------------- */
+    /* 2) HERO SLIDESHOW                                   */
+    /* -------------------------------------------------- */
+    .hero{position:relative; height:84vh; min-height:520px; color:#fff; overflow:hidden}
+    .slides{position:absolute; inset:0;}
+    .slide{position:absolute; inset:0; opacity:0; transition:opacity 900ms ease;}
+    .slide.active{opacity:1}
+    .slide::after{content:""; position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.55))}
+    .slide img{width:100%; height:100%; object-fit:cover}
+    .hero-content{position:relative; z-index:2; height:100%; display:flex; align-items:center;}
+    .hero-inner{max-width:var(--max); margin:0 auto; padding:0 20px;}
+    .eyebrow{display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; background:rgba(255,255,255,.15); backdrop-filter: blur(4px); font-weight:700; letter-spacing:.4px}
+    .hero h1{font-size: clamp(28px,4vw,56px); line-height:1.12; margin:14px 0 10px; text-shadow:0 6px 30px rgba(0,0,0,.35)}
+    .hero p{max-width:720px; font-size: clamp(14px,1.4vw,18px); color:#e8eef7; margin:0 0 22px}
+    .hero-cta{display:flex; gap:14px; flex-wrap:wrap}
+    .hero .ghost{background:transparent; color:#fff; border:2px solid rgba(255,255,255,.7)}
+    .hero .ghost:hover{background:rgba(255,255,255,.12)}
+    .hero-controls{position:absolute; bottom:18px; left:0; right:0; display:flex; justify-content:center; gap:8px; z-index:3}
+    .dot{width:10px; height:10px; border-radius:999px; background:rgba(255,255,255,.55); cursor:pointer; transition:transform .2s}
+    .dot.active{background:#fff; transform:scale(1.2)}
+
+    /* -------------------------------------------------- */
+    /* 3) PARALLAX BANNERS                                 */
+    /* -------------------------------------------------- */
+    .parallax{position:relative; height:40vh; min-height:260px; overflow:hidden}
+    .parallax img{position:absolute; inset:0; width:100%; height:110%; object-fit:cover; transform:translateY(-5%); will-change: transform; filter:saturate(105%)}
+    .parallax::after{content:""; position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,.25))}
+
+    /* -------------------------------------------------- */
+    /* 4) SECTION STYLES                                   */
+    /* -------------------------------------------------- */
+    section{scroll-margin-top:80px}
+    .section{padding:80px 0}
+    .section-title{font-size: clamp(22px,3.5vw,36px); text-align:center; margin:0 0 10px; color:var(--brand-dark)}
+    .section-sub{text-align:center; color:var(--muted); margin-bottom:38px}
+
+    .grid{display:grid; grid-template-columns:repeat(12,1fr); gap:24px}
+    .card{background:var(--card); padding:22px; border-radius:var(--radius); box-shadow:var(--shadow); transition: transform .28s ease, box-shadow .28s ease}
+    .card:hover{transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.12)}
+
+    /* SERVICES */
+    #services .item{grid-column: span 3}
+    #services .item h3{margin:6px 0 8px; color:var(--brand)}
+    #services .item p{color:#475569}
+    #services .icon{width:56px; height:56px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg,#e3ecff,#fff7da); box-shadow:inset 0 0 0 2px rgba(255,255,255,.7)}
+
+    @media (max-width:1000px){
+      #services .item{grid-column: span 6}
+    }
+    @media (max-width:640px){
+      #services .item{grid-column: span 12}
+    }
+
+    /* APPLICATIONS */
+    #applications .card img{border-radius:12px; margin-bottom:14px}
+    #applications .meta{display:flex; gap:10px; align-items:center; color:var(--muted); font-size:14px}
+
+    /* HORIZONTAL IMAGE REEL */
+    .reel-wrap{position:relative}
+    .reel{display:flex; gap:16px; overflow:auto; scroll-snap-type:x mandatory; padding-bottom:6px}
+    .reel::-webkit-scrollbar{height:10px}
+    .reel::-webkit-scrollbar-thumb{background:#cbd5e1; border-radius:999px}
+    .reel .panel{min-width:320px; height:220px; border-radius:16px; overflow:hidden; position:relative; scroll-snap-align:center; box-shadow:var(--shadow)}
+    .reel .panel img{width:100%; height:100%; object-fit:cover}
+    .reel .panel span{position:absolute; left:12px; bottom:12px; background:rgba(0,0,0,.55); color:#fff; padding:6px 10px; border-radius:12px; font-size:12px}
+
+    .reel-btn{position:absolute; top:40%; transform:translateY(-50%); width:42px; height:42px; border-radius:50%; border:none; background:#fff; box-shadow:var(--shadow); cursor:pointer}
+    .reel-btn:hover{transform:translateY(-50%) scale(1.03)}
+    .reel-prev{left:-14px}
+    .reel-next{right:-14px}
+
+    #about{background:#fff; padding:80px 0;}
+#about .content{display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center;}
+#about img{border-radius:20px; box-shadow:0 12px 30px rgba(0,0,0,.08);}
+#about p{margin-top:12px; color:#475569; line-height:1.8; font-size:16px;}
+#about h2{margin-bottom:16px;}
+    /* TESTIMONIALS */
+   #testimonials{background:#f0f4f8; padding:80px 0;}
+.t-card{background:#fff; border-radius:20px; padding:26px; box-shadow:0 10px 30px rgba(0,0,0,.08); max-width:700px; margin:0 auto; text-align:center;}
+.t-face{width:72px; height:72px; border-radius:50%; overflow:hidden; margin:0 auto 12px;}
+.t-quote{font-size:18px; color:#374151;}
+.t-name{margin-top:8px; font-weight:800; color:#134074;}
+
+
+    /* CLIENTS MARQUEE */
+    .marquee{overflow:hidden; background:#f6f7fb; border-radius:20px; box-shadow:var(--shadow); padding:18px}
+    .marquee-track{display:flex; gap:48px; animation: marquee 28s linear infinite}
+    .client{filter:grayscale(100%); opacity:.8; transition:.3s}
+    .client:hover{filter:grayscale(0); opacity:1}
+    @keyframes marquee{from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* CAREERS */
+    #careers .cta{display:flex; gap:14px; flex-wrap:wrap; justify-content:center}
+
+    /* CONTACT */
+    .contact-grid{display:grid; grid-template-columns: 1.2fr 1fr; gap:24px}
+    .contact-card{background:#fff; border-radius:20px; box-shadow:var(--shadow); padding:24px}
+    @media (max-width:900px){.contact-grid{grid-template-columns:1fr}}
+
+    /* REVEAL ANIMATIONS */
+    .reveal{opacity:0; transform: translateY(18px); transition: .9s ease}
+    .reveal.show{opacity:1; transform:none}
+
+    /* SMALL UTILITIES */
+    .muted{color:var(--muted)}
+    .center{text-align:center}
+    .mt-4{margin-top:16px}
+    .mt-6{margin-top:24px}
+    .mt-10{margin-top:40px}
+
+    /* FOOTER */
+    footer{background:var(--brand-dark); color:#eaf2ff; padding:36px 0; margin-top:40px}
+    footer .sig{opacity:.9}
+    /* Make only Home use default/nav color */
+nav a {
+  font-weight: 600;
+  color: #1f2a44; /* default bluish color */
+}
+
+/* Force these links to be full black */
+nav a[href="#hero"],
+nav a[href="#services"],
+nav a[href="#applications"],
+nav a[href="#about"],
+nav a[href="#gallery"],
+nav a[href="#testimonials"],
+nav a[href="#careers"],
+nav a[href="#contact"] {
+  color: black !important;
+  font-weight: bold;
+}
+.logo-img {
+  height: 40px;   /* adjust size */
+  width: auto;
+  vertical-align: middle;
+}
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  overflow: auto;
+  background: rgba(0,0,0,0.5);
+}
+.modal-content {
+  background: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%; max-width: 500px;
+  text-align: center;
+  position: relative;
+}
+.closeBtn {
+  position: absolute;
+  top: 10px; right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
+.modal-content input {
+  display: block;
+  width: 90%;
+  margin: 10px auto;
+  padding: 10px;
+}
+.modal-content .btn {
+  padding: 10px 20px;
+  margin-top: 10px;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+
+  /* Modal Content */
+  .modal-content {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    margin: 5% auto;
+    padding: 30px 25px;
+    border-radius: 15px;
+    width: 400px;
+    max-width: 90%;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    animation: slideIn 0.4s ease;
+  }
+
+  @keyframes slideIn {
+    from {transform: translateY(-40px); opacity: 0;}
+    to {transform: translateY(0); opacity: 1;}
+  }
+
+  /* Close Button */
+  .closeBtn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+
+  .closeBtn:hover {
+    transform: rotate(90deg);
+    color: #ffdd59;
+  }
+
+  /* Form Elements */
+  #careerForm input,
+  #careerForm select,
+  #careerForm button {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+
+  #careerForm input[type="text"],
+  #careerForm input[type="email"],
+  #careerForm input[type="file"] {
+    background: rgba(255,255,255,0.95);
+    color: #333;
+  }
+
+  #careerForm input:focus {
+    box-shadow: 0 0 10px #fff;
+    transform: scale(1.02);
+  }
+
+  /* Submit Button */
+  #careerForm button {
+    background: linear-gradient(135deg, #ff512f, #dd2476);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: all 0.4s ease;
+  }
+
+  #careerForm button:hover {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  }
+
+  /* Heading */
+  .modal-content h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+  }
+
+  /* Toast Notification */
+  #appToast {
+    visibility: hidden;
+    min-width: 280px;
+    background: #10b981;
+    color: #fff;
+    text-align: left;
+    border-radius: 8px;
+    padding: 14px 20px;
+    position: fixed;
+    top: 20px;
+    right: -350px;
+    z-index: 9999;
+    font-size: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: all 0.5s ease;
+  }
+  </style>
+</head>
+<body>
+  <!-- ================================================== -->
+  <!-- NAVBAR                                              -->
+  <!-- ================================================== -->
+ <header>
+  <div class="container nav">
+   <div class="logo">
+  <img src="assests/logo.jpg" alt="MAYI INNOVATIONS Logo" class="logo-img">
+      <span>MAYI INNOVATIONS</span>
+    </div>
+    <div class="menu-toggle" aria-label="Toggle Menu">☰</div>
+    <nav>
+      <ul>
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#applications">Applications</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="#careers">Careers</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+  <!-- ================================================== -->
+  <!-- HERO SLIDESHOW                                      -->
+  <!-- ================================================== -->
+  <section class="hero" id="hero" aria-label="Hero">
+    <div class="slides" aria-live="polite">
+      <!-- Slide 1 -->
+      <figure class="slide active" data-index="0">
+        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1600&auto=format&fit=crop" alt="Team collaborating in a modern workspace" loading="eager" />
+        <figcaption class="sr-only">Collaborative Team</figcaption>
+      </figure>
+      <!-- Slide 2 -->
+      <figure class="slide" data-index="1">
+        <img src="https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?q=80&w=1600&auto=format&fit=crop" alt="Abstract data visualizations on screens" loading="lazy" />
+        <figcaption class="sr-only">Data Visualizations</figcaption>
+      </figure>
+      <!-- Slide 3 -->
+      <figure class="slide" data-index="2">
+        <img src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1600&auto=format&fit=crop" alt="Developer coding at night with colorful lights" loading="lazy" />
+        <figcaption class="sr-only">Developer at Work</figcaption>
+      </figure>
+    </div>
+    <div class="hero-content">
+      <div class="hero-inner">
+        <span class="eyebrow">Software Development • Client Solutions</span>
+        <h1>Beautifully Engineered Software that Scales with Your Vision</h1>
+        <p>We design and deliver web & mobile applications, consulting, and end‑to‑end client solutions that create measurable business impact.</p>
+        <div class="hero-cta">
+          <a class="btn" href="#services">Explore Services</a>
+          <a class="btn ghost" href="#careers">We’re Hiring</a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-controls" aria-label="Slide Controls">
+      <div class="dot active" data-go="0" aria-label="Go to slide 1"></div>
+      <div class="dot" data-go="1" aria-label="Go to slide 2"></div>
+      <div class="dot" data-go="2" aria-label="Go to slide 3"></div>
+    </div>
+  </section>
+
+  <!-- ================================================== -->
+  <!-- PARALLAX RIBBON                                     -->
+  <!-- ================================================== -->
+  <div class="parallax" aria-hidden="true">
+    <img src="https://images.unsplash.com/photo-1593642532973-d31b6557fa68" alt="City Skyline at Night">
+
+  </div>
+
+  <!-- ================================================== -->
+  <!-- SERVICES                                            -->
+  <!-- ================================================== -->
+  <section id="services" class="section">
+    <div class="container">
+      <h2 class="section-title reveal center">Our Services</h2>
+      <p class="section-sub reveal">From discovery to delivery, we build products that are fast, secure, and delightful to use.</p>
+      <div class="grid">
+        <article class="item card reveal">
+          <div class="icon"><span>🧠</span></div>
+          <h3>Custom Software Development</h3>
+          <p>Tailor‑made platforms and internal tools powered by modern stacks (Java, Node.js, MySQL, REST).</p>
+        </article>
+        <article class="item card reveal">
+          <div class="icon"><span>🤝</span></div>
+          <h3>Client Solutions</h3>
+          <p>Strategy + implementation to modernize workflows and drive measurable ROI.</p>
+        </article>
+        <article class="item card reveal">
+          <div class="icon"><span>📱</span></div>
+          <h3>Web & Mobile Apps</h3>
+          <p>Responsive, accessible apps with polished UX and real‑time features.</p>
+        </article>
+        <article class="item card reveal">
+          <div class="icon"><span>🛟</span></div>
+          <h3>Consulting & Support</h3>
+          <p>Architecture, performance, and DevOps guidance with ongoing maintenance.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================== -->
+  <!-- PARALLAX RIBBON 2                                   -->
+  <!-- ================================================== -->
+  <div class="parallax" aria-hidden="true">
+    <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1600&auto=format&fit=crop" alt="Parallax servers"/>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- COMPLETED APPLICATIONS                              -->
+  <!-- ================================================== -->
+  <section id="applications" class="section">
+    <div class="container">
+      <h2 class="section-title center reveal">Completed Applications</h2>
+      <p class="section-sub reveal">A few highlights from our recent deliveries.</p>
+      <div class="grid">
+        <article class="card reveal" style="grid-column: span 4">
+          <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop" alt="Dashboard analytics"/>
+          <h3>Project Alpha – E‑Commerce</h3>
+          <p class="muted">Scalable storefront + admin with real‑time inventory & analytics.</p>
+          <div class="meta"><span>Web</span><span>Retail</span><span>2025</span></div>
+        </article>
+        <article class="card reveal" style="grid-column: span 4">
+          <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop" alt="Team collaboration"/>
+          <h3>Project Beta – Analytics</h3>
+          <p class="muted">Real‑time financial dashboards, alerts, and reporting suite.</p>
+          <div class="meta"><span>Data</span><span>FinTech</span><span>2025</span></div>
+        </article>
+        <article class="card reveal" style="grid-column: span 4">
+          <img src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1200&auto=format&fit=crop" alt="Developer coding"/>
+          <h3>Project Gamma – CRM</h3>
+          <p class="muted">Unified customer 360 with lead pipeline and automation.</p>
+          <div class="meta"><span>CRM</span><span>SaaS</span><span>2025</span></div>
+        </article>
+      </div>
+<!-- ABOUT US -->
+<section id="about">
+<div class="container">
+<h2 class="section-title reveal">About Us</h2>
+<p class="section-sub reveal">Learn more about our mission, vision, and values</p>
+<div class="content reveal">
+<div>
+<h2>Who We Are</h2>
+<p>MAYI INNOVATIONS is a technology-driven company focused on delivering top-notch software solutions for businesses worldwide. With a dedicated team of developers, designers, and strategists, we transform ideas into scalable products.</p>
+<p>Our mission is to create impactful digital experiences that combine innovation, design, and technology. We strive to solve complex problems and help businesses grow with data-driven solutions.</p>
+<h2>Our Vision</h2>
+<p>To be a global leader in delivering high-quality digital solutions that empower businesses, enhance customer experiences, and drive innovation across industries.</p>
+<h2>Our Values</h2>
+<ul>
+<li>Innovation: We embrace creativity and new ideas.</li>
+<li>Excellence: Commitment to quality and continuous improvement.</li>
+<li>Integrity: Honest, transparent, and ethical practices.</li>
+<li>Collaboration: Working together with clients and teams for success.</li>
+<li>Customer-centric: Focus on delivering real value to clients.</li>
+</ul>
+</div>
+<div>
+<img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=600&auto=format&fit=crop" alt="About Us Image">
+</div>
+</div>
+</div>
+</section>
+
+      <!-- Horizontal Image Reel (beautiful scrolling images) -->
+      <div id="gallery" class="mt-10">
+        <h3 class="center reveal">Visual Gallery</h3>
+        <p class="section-sub reveal">Scroll, drag, or use arrows to browse our work.</p>
+        <div class="reel-wrap reveal">
+    
+          <div class="reel" id="imageReel">
+            <figure class="panel"><img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop" alt="Code editor"/><span>Engineering</span></figure>
+            <figure class="panel"><img src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?q=80&w=1200&auto=format&fit=crop" alt="Mobile apps"/><span>Mobile Apps</span></figure>
+            <figure class="panel"><img src="https://images.unsplash.com/photo-1526498460520-4c246339dccb?q=80&w=1200&auto=format&fit=crop" alt="Cloud"/><span>Cloud</span></figure>
+            <figure class="panel"><img src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1200&auto=format&fit=crop" alt="Developer"/><span>Dev</span></figure>
+            <figure class="panel"><img src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=1200&auto=format&fit=crop" alt="Laptop work"/><span>Product</span></figure>
+            <figure class="panel"><img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop" alt="Team"/><span>Team</span></figure>
+            <figure class="panel"><img src="https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?q=80&w=1200&auto=format&fit=crop" alt="Charts"/><span>Insights</span></figure>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+<section id="testimonials">
+<div class="container">
+<h2 class="section-title reveal">Testimonials</h2>
+<p class="section-sub reveal">What our clients say about our work</p>
+<div class="grid reveal">
+    <div class="t-card">
+        <div class="t-face"><img src="https://randomuser.me/api/portraits/men/21.jpg" alt=""></div>
+        <p class="t-quote">"MAYI INNOVATIONS delivered our mobile app on time with exceptional quality."</p>
+        <p class="t-name">John Doe</p>
+    </div>
+    <div class="t-card">
+        <div class="t-face"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt=""></div>
+        <p class="t-quote">"The team was professional, proactive, and exceeded our expectations."</p>
+        <p class="t-name">Sarah Lee</p>
+    </div>
+    <div class="t-card">
+        <div class="t-face"><img src="https://randomuser.me/api/portraits/men/85.jpg" alt=""></div>
+        <p class="t-quote">"Highly recommend for web development projects. True experts."</p>
+        <p class="t-name">Michael Smith</p>
+    </div>
+</div>
+</div>
+</section>
+
+
+  <!-- ================================================== -->
+  <!-- CAREERS                                             -->
+  <!-- ================================================== -->
+  <section id="careers" class="section">
+  <div class="container center">
+    <h2 class="section-title reveal">Careers</h2>
+    <p class="section-sub reveal">We’re growing! Join us in shaping innovative digital products.</p>
+    
+    <div class="cta mt-6">
+      <button id="openFormBtn" class="btn reveal">Send Resume</button>
+      <a class="btn reveal" href="#contact">Talk to HR</a>
+    </div>
+    
+    <p class="muted mt-4 reveal">
+      Reach out to our HR Team at 
+      <a href="mailto:hr@mayiinnovations.onmicrosoft.com">hr@mayiinnovations.onmicrosoft.com</a> / 
+      <a href="mailto:sivanandareddy@mayiinnovations.onmicrosoft.com">sivanandareddy@mayiinnovations.onmicrosoft.com</a> 
+      for any queries.
+    </p>
+  </div>
+</section>
+
+<!-- Modal Form -->
+<div id="careerModal" class="modal">
+  <div class="modal-content">
+    <span class="closeBtn">&times;</span>
+    <h3> Apply for a Position</h3>
+    <form id="careerForm" enctype="multipart/form-data">
+      <input type="text" name="fullname" placeholder="Full Name" required />
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="text" name="phone" placeholder="Phone Number" required />
+
+  
+      <select name="position" required>
+        <option value="">Select Position</option>
+        <option>Software Developer / Engineer</option>
+        <option>Frontend Developer</option>
+        <option>Backend Developer</option>
+        <option>Full Stack Developer</option>
+        <option>QA Engineer / Tester</option>
+        <option>Automation Tester</option>
+        <option>Performance Engineer</option>
+        <option>DevOps Engineer</option>
+        <option>Mobile App Developer</option>
+        <option>Game Developer</option>
+      </select>
+
+      <!-- Experience Dropdown -->
+      <select name="experience">
+        <option value="">Experience (in years)</option>
+        <option>0-1</option>
+        <option>1-2</option>
+        <option>2-3</option>
+        <option>3-4</option>
+        <option>4-5</option>
+        <option>5+</option>
+      </select>
+
+      <input type="text" name="skills" placeholder="Skills Known" />
+
+      <!-- Resume Upload -->
+      <input type="file" name="resume" accept=".pdf,.doc,.docx" required />
+
+      <button type="submit" class="btn">Submit Application</button>
+    </form>
+  </div>
+</div>
+
+
+<div id="appToast">✅ Application submitted successfully!</div>
+
+<script>
+  const modal = document.getElementById("careerModal");
+  const openBtn = document.getElementById("openFormBtn");
+  const closeBtn = document.querySelector(".closeBtn");
+  const appToast = document.getElementById("appToast");
+
+  // Open modal
+  openBtn.onclick = () => modal.style.display = "block";
+
+  // Close modal
+  closeBtn.onclick = () => modal.style.display = "none";
+  window.onclick = e => { if(e.target === modal) modal.style.display = "none"; }
+
+  // Toast show/hide
+  function showAppToast(message, type = "success") {
+    appToast.textContent = message;
+    appToast.style.background = type === "success" ? "#10b981" : "#ef4444";
+    appToast.style.right = "20px";
+    appToast.style.visibility = "visible";
+    setTimeout(() => {
+      appToast.style.right = "-350px";
+      setTimeout(() => (appToast.style.visibility = "hidden"), 500);
+    }, 4000);
+  }
+
+  // Form submission
+  document.getElementById("careerForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch("http://localhost:3000/api/careers", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.json())
+    .then(result => {
+      if(result.success){
+        showAppToast("✅ Application submitted successfully!", "success");
+        this.reset();
+        setTimeout(() => modal.style.display = "none", 2000);
+      } else {
+        showAppToast(result.error || "⚠️ Something went wrong", "error");
+      }
+    })
+    .catch(err => {
+      showAppToast("❌ Network error. Please try again.", "error");
+      console.error(err);
+    });
+  });
+</script>
+
+
+
+  <!-- ================================================== -->
+  <!-- CONTACT                                             -->
+  <!-- ================================================== -->
+  <section id="contact" class="section" style="background:#f7f9fc">
+  <div class="container">
+    <h2 class="section-title center reveal">Contact Us</h2>
+    <p class="section-sub center reveal">We’d love to hear from you. Let’s build something great.</p>
+    <div class="contact-grid">
+      
+      <!-- Contact Info -->
+      <div class="contact-card reveal">
+        <h3>MAYI INNOVATIONS Pvt Ltd.</h3>
+        <p>SANA ELITE, 25, 9th Main Road, Bommanahalli,<br/>Bengaluru South, Karnataka, India, 560068.</p>
+        <hr class="mt-4"/>
+        <p><strong>HR Team:</strong><br/>
+          <a href="mailto:hr@mayiinnovations.onmicrosoft.com">hr@mayiinnovations.onmicrosoft.com</a><br/>
+          <a href="mailto:sivanandareddy@mayiinnovations.onmicrosoft.com">sivanandareddy@mayiinnovations.onmicrosoft.com</a>
+        </p>
+        <p><strong>Mobile:</strong> (+91) 9036624184</p>
+        <p><strong>Email:</strong> <a href="mailto:sivanandareddy@mayiinnovations.onmicrosoft.com">sivanandareddy@mayiinnovations.onmicrosoft.com</a></p>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="contact-card reveal">
+        <h3>Send a Message</h3>
+        <form id="contactForm">
+          <label>Name</label>
+          <input id="contactName" name="name" style="width:100%; padding:12px; border-radius:12px; border:1px solid #d1d5db; margin-bottom:12px" placeholder="Your Name" required>
+
+          <label>Email</label>
+          <input type="email" id="contactEmail" name="email" style="width:100%; padding:12px; border-radius:12px; border:1px solid #d1d5db; margin-bottom:12px" placeholder="you@example.com" required>
+
+          <label>Message</label>
+          <textarea id="contactMessage" name="message" rows="5" style="width:100%; padding:12px; border-radius:12px; border:1px solid #d1d5db; margin-bottom:12px" placeholder="How can we help?" required></textarea>
+
+          <button class="btn" type="submit">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Toast Notification -->
+<div id="toast" style="
+  visibility:hidden;
+  min-width:280px;
+  background:#10b981;
+  color:#fff;
+  text-align:left;
+  border-radius:8px;
+  padding:14px 20px;
+  position:fixed;
+  top:20px;
+  right:-350px;
+  z-index:9999;
+  font-size:15px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  transition:all 0.5s ease;
+">
+  ✅ Your message has been sent successfully!
+</div>
+
+<script>
+  const contactForm = document.getElementById("contactForm");
+  const toast = document.getElementById("toast");
+
+  function showToast(message, type = "success") {
+    toast.textContent = message;
+    toast.style.background = type === "success" ? "#10b981" : "#ef4444"; // green or red
+    toast.style.right = "20px";  // slide in
+    toast.style.visibility = "visible";
+
+    setTimeout(() => {
+      toast.style.right = "-350px"; // slide out
+      setTimeout(() => (toast.style.visibility = "hidden"), 500);
+    }, 4000);
+  }
+
+  contactForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const name = document.getElementById("contactName").value;
+    const email = document.getElementById("contactEmail").value;
+    const message = document.getElementById("contactMessage").value;
+
+    try {
+      const response = await fetch("http://localhost:3000/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showToast("✅ Your message has been sent successfully!", "success");
+        contactForm.reset();
+      } else {
+        showToast("⚠️ Failed to send message. Please try again.", "error");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      showToast("❌ Something went wrong. Please try later.", "error");
+    }
+  });
+  
+</script>
+
+
+  <footer>
+    <div class="container center">
+      <p class="sig">Company Confidential - MAYI INNOVATIONS</p>
+      <p class="sig">Best Wishes – Human Resources</p>
+      <p class="sig">Thanks & Regards,</p>
+      <p class="sig">Patlo Sivananda Reddy | +91 9036624184</p>
+      <p>&copy; 2025 MAYI INNOVATIONS Pvt Ltd. All Rights Reserved.</p>
+    </div>
+  </footer>
+    
+
+  <script>
+    
+    // ----------------------------------------------
+    // Navbar mobile toggle
+    // ----------------------------------------------
+    const toggle=document.querySelector('.menu-toggle');
+    const navList=document.querySelector('nav ul');
+    toggle.addEventListener('click',()=>navList.classList.toggle('show'));
+
+    // Close menu on link click (mobile UX)
+    navList.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
+      navList.classList.remove('show');
+    }));
+
+    // ----------------------------------------------
+    // Hero slideshow (auto + dots navigation)
+    // ----------------------------------------------
+    const heroSlides=[...document.querySelectorAll('.hero .slide')];
+    const heroDots=[...document.querySelectorAll('.hero .dot')];
+    let heroIndex=0;
+    let heroTimer=null;
+
+    function showHero(i){
+      heroSlides.forEach(s=>s.classList.remove('active'));
+      heroDots.forEach(d=>d.classList.remove('active'));
+      heroSlides[i].classList.add('active');
+      heroDots[i].classList.add('active');
+      heroIndex=i;
+    }
+
+    function heroNext(){
+      showHero((heroIndex+1)%heroSlides.length);
+    }
+
+    function startHero(){
+      stopHero();
+      heroTimer=setInterval(heroNext, 5000);
+    }
+    function stopHero(){ if(heroTimer) clearInterval(heroTimer); }
+
+    heroDots.forEach(d=>d.addEventListener('click',e=>{
+      const go=+e.currentTarget.dataset.go; showHero(go); startHero();
+    }));
+
+    startHero();
+
+    // ----------------------------------------------
+    // Parallax effect (subtle translateY)
+    // ----------------------------------------------
+    const parallaxes=[...document.querySelectorAll('.parallax img')];
+    window.addEventListener('scroll',()=>{
+      const t=window.scrollY;
+      parallaxes.forEach(img=>{
+        // move slower than scroll
+        img.style.transform=`translateY(${-(t*0.05)}px)`;
+      });
+    });
+
+    // ----------------------------------------------
+    // Reveal on scroll (IntersectionObserver)
+    // ----------------------------------------------
+    const reveals=[...document.querySelectorAll('.reveal')];
+    const obs=new IntersectionObserver((entries)=>{
+      entries.forEach(ent=>{
+        if(ent.isIntersecting){ ent.target.classList.add('show'); obs.unobserve(ent.target); }
+      });
+    },{threshold:.2});
+    reveals.forEach(el=>obs.observe(el));
+
+    // ----------------------------------------------
+    // Horizontal Image Reel (buttons + drag)
+    // ----------------------------------------------
+    const reel=document.getElementById('imageReel');
+    const prevBtn=document.querySelector('.reel-prev');
+    const nextBtn=document.querySelector('.reel-next');
+
+    prevBtn.addEventListener('click',()=>{
+      reel.scrollBy({left:-360,behavior:'smooth'});
+    });
+    nextBtn.addEventListener('click',()=>{
+      reel.scrollBy({left:360,behavior:'smooth'});
+    });
+
+    // Drag to scroll
+    let isDown=false, startX=0, scrollLeft=0;
+    reel.addEventListener('mousedown',(e)=>{isDown=true; reel.classList.add('drag'); startX=e.pageX - reel.offsetLeft; scrollLeft=reel.scrollLeft;});
+    reel.addEventListener('mouseleave',()=>{isDown=false; reel.classList.remove('drag');});
+    reel.addEventListener('mouseup',()=>{isDown=false; reel.classList.remove('drag');});
+    reel.addEventListener('mousemove',(e)=>{
+      if(!isDown) return; e.preventDefault(); const x=e.pageX - reel.offsetLeft; const walk=(x - startX)*1.3; reel.scrollLeft=scrollLeft - walk;
+    });
+
+    // Auto nudge the reel (gentle movement)
+    let autoDir=1;
+    setInterval(()=>{
+      reel.scrollBy({left: 1*autoDir, behavior:'auto'});
+      // bounce between edges
+      if(reel.scrollLeft + reel.clientWidth >= reel.scrollWidth - 2) autoDir=-1;
+      if(reel.scrollLeft <= 2) autoDir=1;
+    }, 20);
+
+    // ----------------------------------------------
+    // Testimonials slider (reuse dot controls)
+    // ----------------------------------------------
+    const tSlides=[...document.querySelectorAll('#testimonials .slide')];
+    const tDots=[...document.querySelectorAll('#tDots .dot')];
+    let tIndex=0; let tTimer=null;
+
+    function showT(i){
+      tSlides.forEach(s=>s.classList.remove('active'));
+      tDots.forEach(d=>d.classList.remove('active'));
+      tSlides[i].classList.add('active');
+      tDots[i].classList.add('active');
+      tIndex=i;
+    }
+    function tNext(){ showT((tIndex+1)%tSlides.length); }
+    function startT(){ stopT(); tTimer=setInterval(tNext,7000); }
+    function stopT(){ if(tTimer) clearInterval(tTimer); }
+    tDots.forEach(d=> d.addEventListener('click', e=>{ showT(+e.currentTarget.dataset.go); startT(); }));
+    startT();
+  
+    
+
+  </script>
+</body>
+</html>

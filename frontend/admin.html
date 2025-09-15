@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - MAYI Innovations</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    header {
+      background: rgba(255,255,255,0.9);
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+      margin: 0;
+      color: #141414;
+    }
+
+    /* Section buttons */
+    .section-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 25px 0;
+    }
+
+    .section-buttons button {
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .section-buttons button:hover {
+      background: linear-gradient(135deg, #ff512f, #dd2476);
+      transform: translateY(-3px);
+    }
+
+    .section-buttons button.active {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+    }
+
+    .search-bar {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .search-bar input {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 250px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #eee;
+      padding: 12px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #667eea;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+
+    tr:hover {
+      background: #f1f5ff;
+    }
+
+    .pagination {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .pagination button {
+      padding: 8px 12px;
+      margin: 2px;
+      border: none;
+      background: #667eea;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .pagination button.active {
+      background: #764ba2;
+    }
+
+    .pagination button.disabled {
+      background: gray;
+      cursor: not-allowed;
+    }
+
+    .resume-link {
+      color: #667eea;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .resume-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Hide sections initially */
+    .section {
+      display: none;
+    }
+    .section.active {
+      display: block;
+    }
+    
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📊 Admin Dashboard</h1>
+  </header>
+
+  <!-- Tabs -->
+  <div class="section-buttons">
+    <button id="showContact" class="active">📞 Contact</button>
+    <button id="showCareer">💼 Careers</button>
+  </div>
+
+  <!-- Contacts Section -->
+  <div id="contacts" class="section active">
+    <div class="search-bar">
+      <input type="text" id="contactSearch" placeholder="Search contacts...">
+    </div>
+    <table id="contactsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Message</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="pagination" id="contactPagination"></div>
+  </div>
+
+  <!-- Careers Section -->
+  <div id="careers" class="section">
+    <div class="search-bar">
+      <input type="text" id="careerSearch" placeholder="Search careers...">
+    </div>
+    <table id="careersTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Position</th>
+          <th>Experience</th>
+          <th>Skills</th>
+          <th>Resume</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="pagination" id="careerPagination"></div>
+  </div>
+
+  <script>
+    // === Tabs ===
+    document.getElementById("showContact").addEventListener("click", () => {
+      document.getElementById("contacts").classList.add("active");
+      document.getElementById("careers").classList.remove("active");
+      document.getElementById("showContact").classList.add("active");
+      document.getElementById("showCareer").classList.remove("active");
+    });
+
+    document.getElementById("showCareer").addEventListener("click", () => {
+      document.getElementById("careers").classList.add("active");
+      document.getElementById("contacts").classList.remove("active");
+      document.getElementById("showCareer").classList.add("active");
+      document.getElementById("showContact").classList.remove("active");
+    });
+
+    // === Pagination + Search ===
+   function renderTable(data, tableId, paginationId, searchId) {
+  let currentPage = 1;
+  const rowsPerPage = 5;
+
+  function displayTable(filteredData) {
+    const start = (currentPage - 1) * rowsPerPage;
+    const paginatedData = filteredData.slice(start, start + rowsPerPage);
+
+    document.querySelector(`#${tableId} tbody`).innerHTML = paginatedData.map((row, index) => {
+      // Calculate serial number
+      const serialNo = start + index + 1;
+
+      if (tableId === "contactsTable") {
+        return `
+          <tr>
+            <td>${serialNo}</td>
+            <td>${row.name}</td>
+            <td>${row.email}</td>
+            <td>${row.message}</td>
+            <td>${new Date(row.created_at).toLocaleString()}</td>
+          </tr>`;
+      } else {
+        return `
+          <tr>
+            <td>${serialNo}</td>
+            <td>${row.fullname}</td>
+            <td>${row.email}</td>
+            <td>${row.phone}</td>
+            <td>${row.position}</td>
+            <td>${row.experience || "-"}</td>
+            <td>${row.skills || "-"}</td>
+            <td>
+              ${row.resume 
+                ? `<a class="resume-link" href="http://localhost:3000/uploads/${row.resume}" target="_blank">📄 View</a>`
+                : "No File"}
+            </td>
+            <td>${new Date(row.created_at).toLocaleString()}</td>
+          </tr>`;
+      }
+    }).join("");
+
+    renderPagination(filteredData);
+  }
+
+
+
+      function renderPagination(filteredData) {
+        const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+        let buttons = "";
+
+        buttons += `<button ${currentPage === 1 ? "class='disabled'" : ""} onclick="changePage_${tableId}(${currentPage - 1})">⬅ Prev</button>`;
+
+        for (let i = 1; i <= totalPages; i++) {
+          buttons += `<button class="${i === currentPage ? 'active' : ''}" onclick="changePage_${tableId}(${i})">${i}</button>`;
+        }
+
+        buttons += `<button ${currentPage === totalPages ? "class='disabled'" : ""} onclick="changePage_${tableId}(${currentPage + 1})">Next ➡</button>`;
+
+        document.getElementById(paginationId).innerHTML = buttons;
+
+        window[`data_${tableId}`] = filteredData;
+      }
+
+      window[`changePage_${tableId}`] = (page) => {
+        const filteredData = window[`data_${tableId}`];
+        const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+        if (page < 1 || page > totalPages) return;
+        currentPage = page;
+        displayTable(filteredData);
+      };
+
+      document.getElementById(searchId).addEventListener("input", (e) => {
+        const term = e.target.value.toLowerCase();
+        const filteredData = data.filter(row => JSON.stringify(row).toLowerCase().includes(term));
+        currentPage = 1;
+        displayTable(filteredData);
+      });
+
+      displayTable(data);
+    }
+
+    fetch("http://localhost:3000/api/contact")
+      .then(res => res.json())
+      .then(data => renderTable(data, "contactsTable", "contactPagination", "contactSearch"));
+
+    fetch("http://localhost:3000/api/careers")
+      .then(res => res.json())
+      .then(data => renderTable(data, "careersTable", "careerPagination", "careerSearch"));
+      
+      // Reload page every 60 seconds
+setInterval(() => {
+  location.reload();
+}, 60000); // 60000ms = 1 minute
+
+  </script>
+
+</body>
+</html>
