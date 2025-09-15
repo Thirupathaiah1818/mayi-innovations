@@ -246,7 +246,7 @@
             <td>${row.skills || "-"}</td>
             <td>
               ${row.resume 
-                ? `<a class="resume-link" href="http://localhost:3000/uploads/${row.resume}" target="_blank">📄 View</a>`
+                ? `<a class="resume-link" href="https://www.mayiinnovations.info/uploads/${row.resume}" target="_blank">📄 View</a>`
                 : "No File"}
             </td>
             <td>${new Date(row.created_at).toLocaleString()}</td>
@@ -294,11 +294,11 @@
       displayTable(data);
     }
 
-    fetch("http://localhost:3000/api/contact")
+    fetch("https://www.mayiinnovations.info/api/contact")
       .then(res => res.json())
       .then(data => renderTable(data, "contactsTable", "contactPagination", "contactSearch"));
 
-    fetch("http://localhost:3000/api/careers")
+    fetch("https://www.mayiinnovations.info/api/careers")
       .then(res => res.json())
       .then(data => renderTable(data, "careersTable", "careerPagination", "careerSearch"));
       

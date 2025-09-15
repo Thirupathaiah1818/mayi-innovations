@@ -288,6 +288,10 @@ app.use("/uploads", express.static("uploads"));
 
 // ================= SERVER =================
 const PORT = 3000;
+app.use(cors({
+  origin: "https://www.mayiinnovations.info"
+}));
+
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running at http://www.mayiinnovations.info:${PORT}`);
 });
