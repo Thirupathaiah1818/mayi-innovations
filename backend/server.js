@@ -10,6 +10,23 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "http://mayiinnovations.info",
+    "https://mayiinnovations.info",
+    "http://www.mayiinnovations.info",
+    "https://www.mayiinnovations.info"
+  ]
+}));
+
+app.use(express.static(path.join(__dirname, "../frontend")));
+
+// Default route
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
+});
+
 // ================= MULTER CONFIG (File Upload) =================
 if (!fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
@@ -287,11 +304,11 @@ app.use("/uploads", express.static("uploads"));
 // });
 
 // ================= SERVER =================
-const PORT = 3000;
-app.use(cors({
-  origin: "https://www.mayiinnovations.info"
-}));
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://www.mayiinnovations.info:${PORT}`);
+
+const PORT = process.env.PORT || 3000;
+const HOST = "0.0.0.0"; // listen on all interfaces
+
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Backend running on port ${PORT}`);
 });
